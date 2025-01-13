@@ -13,6 +13,31 @@ nav {
     background-color: white;
 }
 
+.nav-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-grow: 1;
+    justify-content: center;
+}
+
+.nav-button {
+    text-decoration: none;
+    color: black;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.nav-button:hover {
+    background-color: #f5f5f5;
+}
+
+.top-bar {
+    background-color: #FFD54F;
+    height: 20px;
+    width: 100%;
+}
+
 .logo {
     display: flex;
     align-items: center;
@@ -40,7 +65,7 @@ nav {
 
 .hero {
     height: 400px;
-    background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://via.placeholder.com/1920x1080');
+    background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('images/hero-background.avif');
     background-size: cover;
     background-position: center;
     display: flex;
@@ -133,6 +158,15 @@ footer {
     background-color: #FFD54F;
     padding: 2rem 5%;
     text-align: center;
+}
+
+footer .logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    font-size: 1.5rem;
 }
 
 @media (max-width: 768px) {
