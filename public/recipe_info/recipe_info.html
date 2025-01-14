@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retsepti Info</title>
+    <link rel="stylesheet" href="recipe_info.css">
+</head>
+<body>
+    <div class="top-bar"></div>
+    <nav>
+        <a href="/" class="logo">
+            ☕ Maitsed laual
+        </a>
+        <div class="nav-buttons">
+            <a href="/" class="nav-button">Kodu</a>
+            <a href="/recipes" class="nav-button">Retseptid</a>
+            <a href="/create-account" class="nav-button">Loo Konto</a>
+        </div>
+        <div class="search-container">
+            <input type="text" placeholder="Otsi retsepti">
+            <button>🔍</button>
+        </div>
+    </nav>
+
+    <section class="recipe-info-section">
+        <h1 id="recipe-title">Retsepti Pealkiri</h1>
+        <img id="recipe-image" src="" alt="Retsepti Pilt">
+        <h2>Koostisosad</h2>
+        <ul id="recipe-ingredients"></ul>
+        <h2>Juhend</h2>
+        <ol id="recipe-instructions"></ol>
+    </section>
+
+    <footer>
+        <div class="logo">
+            ☕ Maitsed laual
+        </div>
+    </footer>
+    <script src="recipe_info.js"></script>
+</body>
+</html>
