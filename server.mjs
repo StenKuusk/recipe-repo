@@ -21,6 +21,17 @@ app.get('/api/recipes/random', async (req, res) => {
     }
 });
 
+app.get('/api/recipes/:id', async (req, res) => {
+    const recipeId = req.params.id;
+    try {
+        const response = await fetch(`https://api.spoonacular.com/recipes/${recipeId}/information?apiKey=${SPOONACULAR_API_KEY}`);
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch recipe details' });
+    }
+});
+
 app.post('/api/translate', express.json(), async (req, res) => {
     try {
         const { text, targetLang } = req.body;

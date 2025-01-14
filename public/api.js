@@ -48,7 +48,7 @@ async function displayRecipes(recipes) {
                 <div class="recipe-content">
                     <h3>${translatedTitle}</h3>
                     <p>${translatedDescription}</p>
-                    <button class="recipe-button">Vaata retsepti</button>
+                    <button class="recipe-button" onclick="window.location.href='/recipe_info/recipe_info.html?id=${recipe.id}'">Vaata retsepti</button>
                 </div>
             </div>
         `;
