@@ -32,6 +32,17 @@ app.get('/api/recipes/:id', async (req, res) => {
     }
 });
 
+app.get('/api/recipes/search', async (req, res) => {
+    const query = req.query.query;
+    try {
+        const response = await fetch(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${SPOONACULAR_API_KEY}&query=${query}&number=3&addRecipeInformation=true`);
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to search recipes' });
+    }
+});
+
 app.post('/api/translate', express.json(), async (req, res) => {
     try {
         const { text, targetLang } = req.body;
@@ -50,6 +61,14 @@ app.post('/api/translate', express.json(), async (req, res) => {
 app.get('/', (req, res) => {
     res.sendFile(`${process.cwd()}/public/homepage.html`);
 });
+
+app.get('/recipes.html', (req, res) => {
+    res.sendFile(`${process.cwd()}/public/recipes.html`);
+})
+
+app.get('/signup.html', (req, res) => {
+    res.sendFile(`${process.cwd()}/public/signup.html`);
+})
 
 app.listen(3000, () => {
     console.log(`Server is running on http://localhost:3000`);
