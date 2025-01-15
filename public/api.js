@@ -14,7 +14,7 @@ async function fetchRandomRecipes() {
         }
         
         const data = await response.json();
-        console.log('API response:', data); // Log the API response
+        console.log('API response:', data);
 
         if (!data.recipes) {
             throw new Error('API response does not contain recipes');

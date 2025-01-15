@@ -62,6 +62,14 @@ app.get('/', (req, res) => {
     res.sendFile(`${process.cwd()}/public/homepage.html`);
 });
 
+app.get('/recipes.html', (req, res) => {
+    res.sendFile(`${process.cwd()}/public/recipes.html`);
+})
+
+app.get('/signup.html', (req, res) => {
+    res.sendFile(`${process.cwd()}/public/signup.html`);
+})
+
 app.listen(3000, () => {
     console.log(`Server is running on http://localhost:3000`);
 });
