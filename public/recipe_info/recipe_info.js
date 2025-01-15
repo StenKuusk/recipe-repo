@@ -31,25 +31,32 @@ async function translateText(text, targetLang = 'et') {
 }
 
 async function displayRecipe(recipe) {
-    const translatedTitle = await translateText(recipe.title);
-    document.getElementById('recipe-title').textContent = translatedTitle;
-    document.getElementById('recipe-image').src = recipe.image;
-    document.getElementById('recipe-image').alt = translatedTitle;
+    try {
+        const translatedTitle = await translateText(recipe.title);
+        document.getElementById('recipe-title').textContent = translatedTitle;
+        document.getElementById('recipe-image').src = recipe.image;
+        document.getElementById('recipe-image').alt = translatedTitle;
 
-    const ingredientsList = document.getElementById('recipe-ingredients');
-    for (const ingredient of recipe.extendedIngredients) {
-        const translatedIngredient = await translateText(ingredient.original);
-        const li = document.createElement('li');
-        li.textContent = translatedIngredient;
-        ingredientsList.appendChild(li);
-    }
+        const ingredientsList = document.getElementById('recipe-ingredients');
+        ingredientsList.innerHTML = ''; // Clear previous ingredients
+        for (const ingredient of recipe.extendedIngredients) {
+            const translatedIngredient = await translateText(ingredient.original);
+            const li = document.createElement('li');
+            li.textContent = translatedIngredient;
+            ingredientsList.appendChild(li);
+        }
 
-    const instructionsList = document.getElementById('recipe-instructions');
-    for (const step of recipe.analyzedInstructions[0].steps) {
-        const translatedStep = await translateText(step.step);
-        const li = document.createElement('li');
-        li.textContent = translatedStep;
-        instructionsList.appendChild(li);
+        const instructionsList = document.getElementById('recipe-instructions');
+        instructionsList.innerHTML = ''; // Clear previous instructions
+        for (const step of recipe.analyzedInstructions[0].steps) {
+            const translatedStep = await translateText(step.step);
+            const li = document.createElement('li');
+            li.textContent = translatedStep;
+            instructionsList.appendChild(li);
+        }
+    } catch (error) {
+        console.error('Error displaying recipe:', error);
+        displayError('Vabandust, retsepti kuvamisel tekkis viga. Palun proovi hiljem uuesti.');
     }
 }
 
