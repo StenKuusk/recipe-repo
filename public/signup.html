@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maitsed laual</title>
+    <title>Loo Konto - Maitsed laual</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -14,7 +14,7 @@
         </a>
         <div class="nav-buttons">
             <a href="/" class="nav-button">Kodu</a>
-            <a href="/login.html" class="nav-button">Logi Sisse</a> 
+            <a href="/recipes.html" class="nav-button">Retseptid</a>
         </div>
         <div class="search-container">
             <input type="text" placeholder="Otsi retsepti">
@@ -23,16 +23,18 @@
     </nav>
 
     <div class="hero">
-        <h1>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</h1>
+        <h1>Loo Konto</h1>
     </div>
 
-    <section class="recipes-section">
-        <h2>Enim otsitud retseptid</h2>
-        <div class="recipes-grid">
-            <div class="loading-message">
-                <p>Laen retsepte...</p>
-            </div>
-        </div>
+    <section class="form-section">
+        <h2>Registreeru</h2>
+        <form>
+            <input type="text" placeholder="Kasutajanimi" required>
+            <input type="email" placeholder="Email" required>
+            <input type="password" placeholder="Parool" required>
+            <button type="submit">Loo Konto</button>
+        </form>
+        <p>Konto juba olemas? <a href="/login.html">Logi sisse!</a></p>
     </section>
     <footer>
         <div class="logo">
