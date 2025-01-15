@@ -1,4 +1,3 @@
-// Lisab random retseptid avalehel
 async function fetchRandomRecipes() {
     try {
         const loadingHTML = `
@@ -28,7 +27,6 @@ async function fetchRandomRecipes() {
     }
 }
 
-// Tõlgib retseptid eesti keelde
 async function translateText(text, targetLang = 'et') {
     const response = await fetch('/api/translate', {
         method: 'POST',
@@ -39,7 +37,6 @@ async function translateText(text, targetLang = 'et') {
     return data.data.translations[0].translatedText;
 }
 
-// Näitab retseptid
 async function displayRecipes(recipes) {
     const recipesGrid = document.querySelector('.recipes-grid');
     recipesGrid.innerHTML = ''; 
@@ -62,7 +59,6 @@ async function displayRecipes(recipes) {
     }
 }
 
-// Retsepti otsing
 async function handleSearch() {
     const searchTerm = document.querySelector('.search-container input').value;
     if (searchTerm.trim() !== '') {
@@ -90,7 +86,6 @@ async function handleSearch() {
     }
 }
 
-// Error kiri
 function displayError(message) {
     const recipesGrid = document.querySelector('.recipes-grid');
     recipesGrid.innerHTML = `
@@ -100,7 +95,6 @@ function displayError(message) {
     `;
 }
 
-// Event listeners
 document.querySelector('.search-container button').addEventListener('click', handleSearch);
 document.querySelector('.search-container input').addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
@@ -108,5 +102,4 @@ document.querySelector('.search-container input').addEventListener('keypress', (
     }
 });
 
-// Laeb random retseptid avalehele
 document.addEventListener('DOMContentLoaded', fetchRandomRecipes);
