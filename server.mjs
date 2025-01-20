@@ -50,6 +50,34 @@ app.post('/signup', async (req, res) => {
     }
 });
 
+app.post('/login', async (req, res) => {
+    const { identifier, password } = req.body;
+
+    const query = 'SELECT * FROM Kasutaja WHERE Email = ? OR Nimi = ?';
+    db.query(query, [identifier, identifier], async (err, results) => {
+        if (err) {
+            console.error('Error fetching user from database:', err);
+            res.status(500).send('Error logging in');
+            return;
+        }
+
+        if (results.length === 0) {
+            res.status(401).send('Valed andmed');
+            return;
+        }
+
+        const user = results[0];
+        const match = await bcrypt.compare(password, user.Parool);
+
+        if (match) {
+            res.redirect('/recipes.html');
+        } else {
+            res.status(401).send('Valed andmed');
+        }
+    });
+});
+
+
 app.get('/api/recipes/random', async (req, res) => {
     try {
         const response = await fetch(`https://api.spoonacular.com/recipes/random?apiKey=${SPOONACULAR_API_KEY}&number=3&tags=main course`);
