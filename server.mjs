@@ -1,6 +1,8 @@
 import express from 'express';
 import fetch from 'node-fetch';
 import dotenv from 'dotenv';
+import mysql from 'mysql2';
+import bcrypt from 'bcrypt';
 
 dotenv.config();
 
@@ -10,6 +12,43 @@ const SPOONACULAR_API_KEY = process.env.SPOONACULAR_API_KEY;
 const GOOGLE_TRANSLATE_API_KEY = process.env.GOOGLE_TRANSLATE_API_KEY;
 
 app.use(express.static('public'));
+app.use(express.json());
+
+const db = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME
+});
+
+db.connect((err) => {
+    if (err) {
+        console.error('Error connecting to the database:', err);
+        return;
+    }
+    console.log('Connected to the database');
+});
+
+
+app.post('/signup', async (req, res) => {
+    const { nimi, email, parool } = req.body;
+
+    try {
+        const hashedPassword = await bcrypt.hash(parool, 10);
+        const query = 'INSERT INTO Kasutaja (Nimi, Email, Parool) VALUES (?, ?, ?)';
+        db.query(query, [nimi, email, hashedPassword], (err, result) => {
+            if (err) {
+                console.error('Error inserting user into database:', err);
+                res.status(500).send('Error creating account');
+                return;
+            }
+            res.redirect('/login.html');
+        });
+    } catch (error) {
+        console.error('Error hashing password:', error);
+        res.status(500).send('Error creating account');
+    }
+});
 
 app.get('/api/recipes/random', async (req, res) => {
     try {
