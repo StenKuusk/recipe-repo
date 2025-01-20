@@ -38,7 +38,7 @@ async function displayRecipe(recipe) {
         document.getElementById('recipe-image').alt = translatedTitle;
 
         const ingredientsList = document.getElementById('recipe-ingredients');
-        ingredientsList.innerHTML = ''; // Clear previous ingredients
+        ingredientsList.innerHTML = '';
         for (const ingredient of recipe.extendedIngredients) {
             const translatedIngredient = await translateText(ingredient.original);
             const li = document.createElement('li');
@@ -47,7 +47,7 @@ async function displayRecipe(recipe) {
         }
 
         const instructionsList = document.getElementById('recipe-instructions');
-        instructionsList.innerHTML = ''; // Clear previous instructions
+        instructionsList.innerHTML = '';
         for (const step of recipe.analyzedInstructions[0].steps) {
             const translatedStep = await translateText(step.step);
             const li = document.createElement('li');

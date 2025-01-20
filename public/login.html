@@ -28,9 +28,9 @@
 
     <section class="form-section">
         <h2>Sisselogimine</h2>
-        <form>
-            <input type="email" placeholder="Email" required>
-            <input type="password" placeholder="Parool" required>
+        <form action="/login" method="POST">
+            <input type="text" name="identifier" placeholder="Email või Kasutajanimi" required>
+            <input type="password" name="password" placeholder="Parool" required>
             <button type="submit">Logi Sisse</button>
         </form>
         <p>Kui pole kasutajat, <a href="/signup.html">registreeri!</a></p>
