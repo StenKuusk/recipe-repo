@@ -4,12 +4,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (recipeId) {
         try {
-            const response = await fetch(`/api/recipes/${recipeId}`);
+            const response = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${recipeId}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const recipe = await response.json();
+            const data = await response.json();
+            if (!data.meals || data.meals.length === 0) {
+                throw new Error('Recipe not found');
+            }
+
+            const recipe = data.meals[0];
             await displayRecipe(recipe);
         } catch (error) {
             console.error('Error fetching recipe:', error);
@@ -32,24 +37,29 @@ async function translateText(text, targetLang = 'et') {
 
 async function displayRecipe(recipe) {
     try {
-        const translatedTitle = await translateText(recipe.title);
+        const translatedTitle = await translateText(recipe.strMeal);
         document.getElementById('recipe-title').textContent = translatedTitle;
-        document.getElementById('recipe-image').src = recipe.image;
+        document.getElementById('recipe-image').src = recipe.strMealThumb;
         document.getElementById('recipe-image').alt = translatedTitle;
 
         const ingredientsList = document.getElementById('recipe-ingredients');
         ingredientsList.innerHTML = '';
-        for (const ingredient of recipe.extendedIngredients) {
-            const translatedIngredient = await translateText(ingredient.original);
-            const li = document.createElement('li');
-            li.textContent = translatedIngredient;
-            ingredientsList.appendChild(li);
+        for (let i = 1; i <= 20; i++) {
+            const ingredient = recipe[`strIngredient${i}`];
+            const measure = recipe[`strMeasure${i}`];
+            if (ingredient && ingredient.trim() !== '') {
+                const translatedIngredient = await translateText(`${measure} ${ingredient}`);
+                const li = document.createElement('li');
+                li.textContent = translatedIngredient;
+                ingredientsList.appendChild(li);
+            }
         }
 
+        const instructions = recipe.strInstructions.split('\n').filter(step => step.trim() !== '');
         const instructionsList = document.getElementById('recipe-instructions');
         instructionsList.innerHTML = '';
-        for (const step of recipe.analyzedInstructions[0].steps) {
-            const translatedStep = await translateText(step.step);
+        for (const step of instructions) {
+            const translatedStep = await translateText(step);
             const li = document.createElement('li');
             li.textContent = translatedStep;
             instructionsList.appendChild(li);

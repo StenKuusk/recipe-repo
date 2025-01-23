@@ -8,7 +8,6 @@ dotenv.config();
 
 const app = express();
 
-const SPOONACULAR_API_KEY = process.env.SPOONACULAR_API_KEY;
 const GOOGLE_TRANSLATE_API_KEY = process.env.GOOGLE_TRANSLATE_API_KEY;
 
 app.use(express.static('public'));
@@ -28,7 +27,6 @@ db.connect((err) => {
     }
     console.log('Connected to the database');
 });
-
 
 app.post('/signup', async (req, res) => {
     const { nimi, email, parool } = req.body;
@@ -78,35 +76,14 @@ app.post('/login', async (req, res) => {
 });
 
 
-app.get('/api/recipes/random', async (req, res) => {
-    try {
-        const response = await fetch(`https://api.spoonacular.com/recipes/random?apiKey=${SPOONACULAR_API_KEY}&number=3&tags=main course`);
-        const data = await response.json();
-        res.json(data);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch recipes' });
-    }
-});
-
-app.get('/api/recipes/:id', async (req, res) => {
-    const recipeId = req.params.id;
-    try {
-        const response = await fetch(`https://api.spoonacular.com/recipes/${recipeId}/information?apiKey=${SPOONACULAR_API_KEY}`);
-        const data = await response.json();
-        res.json(data);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch recipe details' });
-    }
-});
-
 app.get('/api/recipes/search', async (req, res) => {
-    const query = req.query.query;
+    const { query } = req.query;
     try {
-        const response = await fetch(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${SPOONACULAR_API_KEY}&query=${query}&number=3&addRecipeInformation=true`);
+        const response = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`);
         const data = await response.json();
-        res.json(data);
+        res.json({ results: data.meals });
     } catch (error) {
-        res.status(500).json({ error: 'Failed to search recipes' });
+        res.status(500).json({ error: 'Retseptide otsimine ebaõnnestus' });
     }
 });
 
@@ -130,12 +107,12 @@ app.get('/', (req, res) => {
 });
 
 app.get('/recipes.html', (req, res) => {
-    res.sendFile(`${process.cwd()}/public/recipes.html`);
-})
+    res.sendFile(`${process.cwd()}/public/Recipes_page/recipes.html`);
+});
 
 app.get('/signup.html', (req, res) => {
     res.sendFile(`${process.cwd()}/public/signup.html`);
-})
+});
 
 app.listen(3000, () => {
     console.log(`Server is running on http://localhost:3000`);
