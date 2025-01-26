@@ -64,9 +64,44 @@ async function displayRecipe(recipe) {
             li.textContent = translatedStep;
             instructionsList.appendChild(li);
         }
+
+        const userId = localStorage.getItem('userId');
+        if (userId) {
+            const addToFavoritesButton = document.createElement('button');
+            addToFavoritesButton.textContent = 'Lisa lemmikutesse';
+            addToFavoritesButton.classList.add('add-to-favorites-button');
+            addToFavoritesButton.addEventListener('click', () => addToFavorites(recipe.idMeal));
+            document.querySelector('.recipe-info-section').appendChild(addToFavoritesButton);
+        }
     } catch (error) {
         console.error('Error displaying recipe:', error);
         displayError('Vabandust, retsepti kuvamisel tekkis viga. Palun proovi hiljem uuesti.');
+    }
+}
+
+async function addToFavorites(recipeId) {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+        alert('Palun logi sisse, et lisada retsepte lemmikutesse.');
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/favorites', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, recipeId })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            alert('Retsept lisatud lemmikutesse.');
+        } else {
+            alert(`Viga: ${data.message}`);
+        }
+    } catch (error) {
+        console.error('Error adding recipe to favorites:', error);
+        alert('Vabandust, retsepti lisamisel lemmikutesse tekkis viga. Palun proovi hiljem uuesti.');
     }
 }
 
@@ -78,3 +113,34 @@ function displayError(message) {
         </div>
     `;
 }
+
+function updateNavBar() {
+    const navButtons = document.getElementById('nav-buttons');
+    const userId = localStorage.getItem('userId');
+
+    if (navButtons) {
+        if (userId) {
+            navButtons.innerHTML = `
+                <a href="/" class="nav-button">Kodu</a>
+                <a href="/recipes.html" class="nav-button">Retseptid</a>
+                <a href="../Account_favorites/favorites.html" class="nav-button">Minu Retseptid</a>
+                <a href="#" class="nav-button" id="logout-button">Logi välja</a>
+            `;
+
+            document.getElementById('logout-button').addEventListener('click', () => {
+                localStorage.removeItem('userId');
+                window.location.href = '/';
+            });
+        } else {
+            navButtons.innerHTML = `
+                <a href="/" class="nav-button">Kodu</a>
+                <a href="/recipes.html" class="nav-button">Retseptid</a>
+                <a href="/login.html" class="nav-button">Logi Sisse</a>
+            `;
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    updateNavBar();
+});

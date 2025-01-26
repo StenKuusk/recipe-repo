@@ -10,7 +10,7 @@
     <div class="top-bar"></div>
     <nav>
         <a href="/" class="logo">☕ Maitsed laual</a>
-        <div class="nav-buttons">
+        <div id="nav-buttons" class="nav-buttons">
             <a href="/" class="nav-button">Kodu</a>
             <a href="/recipes.html" class="nav-button">Retseptid</a>
             <a href="/login.html" class="nav-button">Logi Sisse</a>
@@ -21,6 +21,7 @@
         <h1>Retseptid</h1>
     </div>
 
+    <div class="main-content">
     <section class="recipes-section">
         <div class="filters-container">
             <h3>Filtreeri retsepte</h3>
@@ -60,7 +61,6 @@
                 <button id="apply-filters-button">Rakenda filtrid</button>
                 <div class="page-search-container">
                     <input type="text" placeholder="Otsi retsepti">
-                    <button>🔍</button>
                 </div>
             </div>
         </div>
@@ -70,12 +70,13 @@
             <div class="recipes-grid" id="random-recipes-grid">
             </div>
         </section>
-
+    </div>
     </section>
 
     <footer>
         <div class="logo">☕ Maitsed laual</div>
     </footer>
+    <script src="../api.js"></script>
     <script src="../Recipes_page/recipes.js"></script>
 </body>
 </html>

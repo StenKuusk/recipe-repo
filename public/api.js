@@ -26,6 +26,20 @@ async function fetchRandomRecipes() {
     }
 }
 
+async function saveRecipesToDatabase() {
+    try {
+        const response = await fetch('/api/recipes/save');
+        const data = await response.json();
+        if (response.ok) {
+            console.log('Recipes saved successfully:', data.message);
+        } else {
+            console.error('Error saving recipes:', data.message);
+        }
+    } catch (error) {
+        console.error('Error saving recipes:', error);
+    }
+}
+
 async function translateText(text, targetLang = 'et') {
     const response = await fetch('/api/translate', {
         method: 'POST',
@@ -93,11 +107,41 @@ function displayError(message) {
     `;
 }
 
+function updateNavBar() {
+    const navButtons = document.getElementById('nav-buttons');
+    const userId = localStorage.getItem('userId');
+
+    if (navButtons) {
+        if (userId) {
+            navButtons.innerHTML = `
+                <a href="/" class="nav-button">Kodu</a>
+                <a href="/recipes.html" class="nav-button">Retseptid</a>
+                <a href="../Account_favorites/favorites.html" class="nav-button">Minu Retseptid</a>
+                <a href="#" class="nav-button" id="logout-button">Logi välja</a>
+            `;
+
+            document.getElementById('logout-button').addEventListener('click', () => {
+                localStorage.removeItem('userId');
+                window.location.href = '/';
+            });
+        } else {
+            navButtons.innerHTML = `
+                <a href="/" class="nav-button">Kodu</a>
+                <a href="/recipes.html" class="nav-button">Retseptid</a>
+                <a href="/login.html" class="nav-button">Logi Sisse</a>
+            `;
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetchRandomRecipes();
+    updateNavBar();
+});
+
 document.querySelector('.search-container button').addEventListener('click', handleSearch);
 document.querySelector('.search-container input').addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         handleSearch();
     }
 });
-
-document.addEventListener('DOMContentLoaded', fetchRandomRecipes);
