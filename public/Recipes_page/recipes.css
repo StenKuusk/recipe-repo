@@ -5,6 +5,8 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
+
+
 nav {
     display: flex;
     justify-content: space-between;
@@ -172,10 +174,17 @@ nav {
     grid-column: 1 / -1;
 }
 
+.main-content {
+    flex: 1;
+}
+
 footer {
     background-color: #FFD54F;
     padding: 2rem 5%;
     text-align: center;
+    position: relative;
+    width: 100%;
+    bottom: 0;
 }
 
 footer .logo {

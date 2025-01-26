@@ -22,11 +22,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify(data)
                 });
 
+                const responseData = await response.json();
                 if (response.ok) {
+                    localStorage.setItem('userId', responseData.userId);
+                    alert('Konto loomine õnnestus');
                     window.location.href = '/login.html';
                 } else {
-                    const errorText = await response.text();
-                    alert(`Error: ${errorText}`);
+                    alert(`Error: ${responseData.message}`);
                 }
             } catch (error) {
                 console.error('Error during signup:', error);
@@ -54,11 +56,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify(data)
                 });
 
+                const responseData = await response.json();
                 if (response.ok) {
-                    window.location.href = '/recipes.html';
+                    localStorage.setItem('userId', responseData.userId);
+                    alert('Sisselogimine õnnestus');
+                    window.location.href = '/homepage.html';
                 } else {
-                    const errorText = await response.text();
-                    alert(`Error: ${errorText}`);
+                    alert(`Error: ${responseData.message}`);
                 }
             } catch (error) {
                 console.error('Error during login:', error);
@@ -66,4 +70,36 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Konto view
+    function updateNavBar() {
+        const navButtons = document.getElementById('nav-buttons');
+        const userId = localStorage.getItem('userId');
+
+        if (navButtons) {
+            if (userId) {
+                navButtons.innerHTML = `
+                    <a href="/" class="nav-button">Kodu</a>
+                    <a href="/recipes.html" class="nav-button">Retseptid</a>
+                    <a href="../Account_favorites/favorites.html" class="nav-button">Minu Retseptid</a>
+                    <a href="#" class="nav-button" id="logout-button">Logi välja</a>
+                `;
+
+                document.getElementById('logout-button').addEventListener('click', () => {
+                    localStorage.removeItem('userId');
+                    window.location.href = '/';
+                });
+            } else {
+                navButtons.innerHTML = `
+                    <a href="/" class="nav-button">Kodu</a>
+                    <a href="/recipes.html" class="nav-button">Retseptid</a>
+                    <a href="/login.html" class="nav-button">Logi Sisse</a>
+                `;
+            }
+        }
+    }
+
+    updateNavBar();
+
+    window.addEventListener('load', updateNavBar);
 });

@@ -40,7 +40,8 @@ app.post('/signup', async (req, res) => {
                 res.status(500).send('Error creating account');
                 return;
             }
-            res.redirect('/login.html');
+            const userId = result.insertId;
+            res.json({ userId, message: 'Account created successfully' });
         });
     } catch (error) {
         console.error('Error hashing password:', error);
@@ -55,12 +56,12 @@ app.post('/login', async (req, res) => {
     db.query(query, [identifier, identifier], async (err, results) => {
         if (err) {
             console.error('Error fetching user from database:', err);
-            res.status(500).send('Error logging in');
+            res.status(500).json({ message: 'Error logging in' });
             return;
         }
 
         if (results.length === 0) {
-            res.status(401).send('Valed andmed');
+            res.status(401).json({ message: 'Valed andmed' });
             return;
         }
 
@@ -68,10 +69,89 @@ app.post('/login', async (req, res) => {
         const match = await bcrypt.compare(password, user.Parool);
 
         if (match) {
-            res.redirect('/recipes.html');
+            res.json({ userId: user.Kasutaja_ID, message: 'Login successful' });
         } else {
-            res.status(401).send('Valed andmed');
+            res.status(401).json({ message: 'Valed andmed' });
         }
+    });
+});
+
+app.get('/api/recipes/save', async (req, res) => {
+    try {
+        const recipes = [];
+        const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
+        for (const letter of letters) {
+            const response = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?f=${letter}`);
+            const data = await response.json();
+            if (data.meals) {
+                recipes.push(...data.meals);
+            }
+        }
+
+        for (const recipe of recipes) {
+            const { idMeal, strMeal, strInstructions } = recipe;
+            const query = 'INSERT IGNORE INTO Retseptid (Retsept_ID, Pealkiri, Kirjeldus) VALUES (?, ?, ?)';
+            db.query(query, [idMeal, strMeal, strInstructions], (err) => {
+                if (err) {
+                    console.error('Error saving recipe to database:', err);
+                }
+            });
+        }
+
+        res.json({ message: 'Recipes saved successfully' });
+    } catch (error) {
+        console.error('Error fetching recipes:', error);
+        res.status(500).json({ message: 'Error saving recipes' });
+    }
+});
+
+app.post('/api/favorites', async (req, res) => {
+    const { userId, recipeId } = req.body;
+
+    const query = 'INSERT INTO Lemmik_Retseptid (Kasutaja_ID, Retsept_ID) VALUES (?, ?)';
+    db.query(query, [userId, recipeId], (err) => {
+        if (err) {
+            console.error('Error saving favorite recipe:', err);
+            res.status(500).json({ message: 'Error saving favorite recipe' });
+            return;
+        }
+
+        res.json({ message: 'Favorite recipe saved successfully' });
+    });
+});
+
+app.get('/api/favorites/:userId', async (req, res) => {
+    const { userId } = req.params;
+
+    const query = `
+        SELECT r.Retsept_ID as idMeal, r.Pealkiri as strMeal, r.Kirjeldus as strInstructions
+        FROM Lemmik_Retseptid lr
+        JOIN Retseptid r ON lr.Retsept_ID = r.Retsept_ID
+        WHERE lr.Kasutaja_ID = ?
+    `;
+    db.query(query, [userId], (err, results) => {
+        if (err) {
+            console.error('Error fetching favorite recipes:', err);
+            res.status(500).json({ message: 'Error fetching favorite recipes' });
+            return;
+        }
+
+        res.json(results);
+    });
+});
+
+app.delete('/api/favorites/:userId/:recipeId', async (req, res) => {
+    const { userId, recipeId } = req.params;
+
+    const query = 'DELETE FROM Lemmik_Retseptid WHERE Kasutaja_ID = ? AND Retsept_ID = ?';
+    db.query(query, [userId, recipeId], (err) => {
+        if (err) {
+            console.error('Error removing favorite recipe:', err);
+            res.status(500).json({ message: 'Error removing favorite recipe' });
+            return;
+        }
+
+        res.json({ message: 'Lemmik retsept eemaldatud õnnestus' });
     });
 });
 
