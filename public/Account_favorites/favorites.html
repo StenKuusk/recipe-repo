@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minu Lemmikretseptid - Maitsed laual</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <div class="top-bar"></div>
+    <nav>
+        <a href="/" class="logo">
+            ☕ Maitsed laual
+        </a>
+        <div id="nav-buttons" class="nav-buttons">
+            <a href="/" class="nav-button">Kodu</a>
+            <a href="../Recipes_page/recipes.html" class="nav-button">Retseptid</a>
+            <a href="../login.html" class="nav-button">Logi Sisse</a> 
+        </div>
+        <div class="search-container">
+            <input type="text" placeholder="Otsi retsepti">
+            <button>🔍</button>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <section class="favorites-section">
+            <h2>Minu Lemmikretseptid</h2>
+            <div class="favorites-grid">
+                <div class="loading-message">
+                    <p>Laen lemmikretsepte...</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="logo">☕ Maitsed laual</div>
+    </footer>
+    <script src="favorites.js"></script>
+    <script src="../api.js"></script>
+</body>
+</html>

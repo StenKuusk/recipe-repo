@@ -1,34 +1,169 @@
 import express from 'express';
 import fetch from 'node-fetch';
 import dotenv from 'dotenv';
+import mysql from 'mysql2';
+import bcrypt from 'bcrypt';
 
 dotenv.config();
 
 const app = express();
 
-const SPOONACULAR_API_KEY = process.env.SPOONACULAR_API_KEY;
 const GOOGLE_TRANSLATE_API_KEY = process.env.GOOGLE_TRANSLATE_API_KEY;
 
 app.use(express.static('public'));
+app.use(express.json());
 
-app.get('/api/recipes/random', async (req, res) => {
+const db = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME
+});
+
+db.connect((err) => {
+    if (err) {
+        console.error('Error connecting to the database:', err);
+        return;
+    }
+    console.log('Connected to the database');
+});
+
+app.post('/signup', async (req, res) => {
+    const { nimi, email, parool } = req.body;
+
     try {
-        const response = await fetch(`https://api.spoonacular.com/recipes/random?apiKey=${SPOONACULAR_API_KEY}&number=3&tags=main course`);
-        const data = await response.json();
-        res.json(data);
+        const hashedPassword = await bcrypt.hash(parool, 10);
+        const query = 'INSERT INTO Kasutaja (Nimi, Email, Parool) VALUES (?, ?, ?)';
+        db.query(query, [nimi, email, hashedPassword], (err, result) => {
+            if (err) {
+                console.error('Error inserting user into database:', err);
+                res.status(500).send('Error creating account');
+                return;
+            }
+            const userId = result.insertId;
+            res.json({ userId, message: 'Account created successfully' });
+        });
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch recipes' });
+        console.error('Error hashing password:', error);
+        res.status(500).send('Error creating account');
     }
 });
 
-app.get('/api/recipes/:id', async (req, res) => {
-    const recipeId = req.params.id;
+app.post('/login', async (req, res) => {
+    const { identifier, password } = req.body;
+
+    const query = 'SELECT * FROM Kasutaja WHERE Email = ? OR Nimi = ?';
+    db.query(query, [identifier, identifier], async (err, results) => {
+        if (err) {
+            console.error('Error fetching user from database:', err);
+            res.status(500).json({ message: 'Error logging in' });
+            return;
+        }
+
+        if (results.length === 0) {
+            res.status(401).json({ message: 'Valed andmed' });
+            return;
+        }
+
+        const user = results[0];
+        const match = await bcrypt.compare(password, user.Parool);
+
+        if (match) {
+            res.json({ userId: user.Kasutaja_ID, message: 'Login successful' });
+        } else {
+            res.status(401).json({ message: 'Valed andmed' });
+        }
+    });
+});
+
+app.get('/api/recipes/save', async (req, res) => {
     try {
-        const response = await fetch(`https://api.spoonacular.com/recipes/${recipeId}/information?apiKey=${SPOONACULAR_API_KEY}`);
-        const data = await response.json();
-        res.json(data);
+        const recipes = [];
+        const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
+        for (const letter of letters) {
+            const response = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?f=${letter}`);
+            const data = await response.json();
+            if (data.meals) {
+                recipes.push(...data.meals);
+            }
+        }
+
+        for (const recipe of recipes) {
+            const { idMeal, strMeal, strInstructions } = recipe;
+            const query = 'INSERT IGNORE INTO Retseptid (Retsept_ID, Pealkiri, Kirjeldus) VALUES (?, ?, ?)';
+            db.query(query, [idMeal, strMeal, strInstructions], (err) => {
+                if (err) {
+                    console.error('Error saving recipe to database:', err);
+                }
+            });
+        }
+
+        res.json({ message: 'Recipes saved successfully' });
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch recipe details' });
+        console.error('Error fetching recipes:', error);
+        res.status(500).json({ message: 'Error saving recipes' });
+    }
+});
+
+app.post('/api/favorites', async (req, res) => {
+    const { userId, recipeId } = req.body;
+
+    const query = 'INSERT INTO Lemmik_Retseptid (Kasutaja_ID, Retsept_ID) VALUES (?, ?)';
+    db.query(query, [userId, recipeId], (err) => {
+        if (err) {
+            console.error('Error saving favorite recipe:', err);
+            res.status(500).json({ message: 'Error saving favorite recipe' });
+            return;
+        }
+
+        res.json({ message: 'Favorite recipe saved successfully' });
+    });
+});
+
+app.get('/api/favorites/:userId', async (req, res) => {
+    const { userId } = req.params;
+
+    const query = `
+        SELECT r.Retsept_ID as idMeal, r.Pealkiri as strMeal, r.Kirjeldus as strInstructions
+        FROM Lemmik_Retseptid lr
+        JOIN Retseptid r ON lr.Retsept_ID = r.Retsept_ID
+        WHERE lr.Kasutaja_ID = ?
+    `;
+    db.query(query, [userId], (err, results) => {
+        if (err) {
+            console.error('Error fetching favorite recipes:', err);
+            res.status(500).json({ message: 'Error fetching favorite recipes' });
+            return;
+        }
+
+        res.json(results);
+    });
+});
+
+app.delete('/api/favorites/:userId/:recipeId', async (req, res) => {
+    const { userId, recipeId } = req.params;
+
+    const query = 'DELETE FROM Lemmik_Retseptid WHERE Kasutaja_ID = ? AND Retsept_ID = ?';
+    db.query(query, [userId, recipeId], (err) => {
+        if (err) {
+            console.error('Error removing favorite recipe:', err);
+            res.status(500).json({ message: 'Error removing favorite recipe' });
+            return;
+        }
+
+        res.json({ message: 'Lemmik retsept eemaldatud õnnestus' });
+    });
+});
+
+
+app.get('/api/recipes/search', async (req, res) => {
+    const { query } = req.query;
+    try {
+        const response = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`);
+        const data = await response.json();
+        res.json({ results: data.meals });
+    } catch (error) {
+        res.status(500).json({ error: 'Retseptide otsimine ebaõnnestus' });
     }
 });
 
@@ -49,6 +184,14 @@ app.post('/api/translate', express.json(), async (req, res) => {
 
 app.get('/', (req, res) => {
     res.sendFile(`${process.cwd()}/public/homepage.html`);
+});
+
+app.get('/recipes.html', (req, res) => {
+    res.sendFile(`${process.cwd()}/public/Recipes_page/recipes.html`);
+});
+
+app.get('/signup.html', (req, res) => {
+    res.sendFile(`${process.cwd()}/public/signup.html`);
 });
 
 app.listen(3000, () => {

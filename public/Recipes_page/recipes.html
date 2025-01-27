@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retseptid - Maitsed laual</title>
+    <link rel="stylesheet" href="../Recipes_page/recipes.css">       
+</head>
+<body>
+    <div class="top-bar"></div>
+    <nav>
+        <a href="/" class="logo">☕ Maitsed laual</a>
+        <div id="nav-buttons" class="nav-buttons">
+            <a href="/" class="nav-button">Kodu</a>
+            <a href="/recipes.html" class="nav-button">Retseptid</a>
+            <a href="/login.html" class="nav-button">Logi Sisse</a>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <h1>Retseptid</h1>
+    </div>
+
+    <div class="main-content">
+    <section class="recipes-section">
+        <div class="filters-container">
+            <h3>Filtreeri retsepte</h3>
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Kategooria:</label>
+                    <select id="category-filter">
+                        <option value="">Kõik</option>
+                        <option value="hommikusöök">Hommikusöök</option>
+                        <option value="lõunasöök">Lõunasöök</option>
+                        <option value="õhtusöök">Õhtusöök</option>
+                        <option value="magustoit">Magustoit</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>Valmistamisaeg:</label>
+                    <select id="time-filter">
+                        <option value="">Kõik</option>
+                        <option value="15">Kuni 15 min</option>
+                        <option value="30">Kuni 30 min</option>
+                        <option value="60">Kuni 1 tund</option>
+                        <option value="more">Üle 1 tunni</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Raskusaste:</label>
+                    <select id="difficulty-filter">
+                        <option value="">Kõik</option>
+                        <option value="lihtne">Lihtne</option>
+                        <option value="keskmine">Keskmine</option>
+                        <option value="raske">Raske</option>
+                    </select>
+                </div>
+
+                <button id="apply-filters-button">Rakenda filtrid</button>
+                <div class="page-search-container">
+                    <input type="text" placeholder="Otsi retsepti">
+                </div>
+            </div>
+        </div>
+
+        <section class="recipes-section">
+            <h2>Populaarsed retseptid</h2>
+            <div class="recipes-grid" id="random-recipes-grid">
+            </div>
+        </section>
+    </div>
+    </section>
+
+    <footer>
+        <div class="logo">☕ Maitsed laual</div>
+    </footer>
+    <script src="../api.js"></script>
+    <script src="../Recipes_page/recipes.js"></script>
+</body>
+</html>

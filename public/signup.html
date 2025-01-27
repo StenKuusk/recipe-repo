@@ -26,21 +26,23 @@
         <h1>Loo Konto</h1>
     </div>
 
+    <div class="main-content">
     <section class="form-section">
         <h2>Registreeru</h2>
-        <form>
-            <input type="text" placeholder="Kasutajanimi" required>
-            <input type="email" placeholder="Email" required>
-            <input type="password" placeholder="Parool" required>
+        <form  id="signup-form" action="/signup" method="POST">
+            <input type="text" name="nimi" placeholder="Kasutajanimi" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="parool" placeholder="Parool" required>
             <button type="submit">Loo Konto</button>
         </form>
         <p>Konto juba olemas? <a href="/login.html">Logi sisse!</a></p>
+    </div>
     </section>
     <footer>
         <div class="logo">
             ☕ Maitsed laual
         </div>
     </footer>
-    <script src="api.js"></script>
+    <script src="login_signup.js"></script>
 </body>
 </html>
