@@ -166,6 +166,37 @@ app.get('/api/recipes/search', async (req, res) => {
     }
 });
 
+app.post('/api/comments', async (req, res) => {
+    const { userId, recipeId, commentText, rating } = req.body;
+    const query = 'INSERT INTO Kommentaarid (Kasutaja_ID, Retsept_ID, Kommentaar, Hinne) VALUES (?, ?, ?, ?)';
+    db.query(query, [userId, recipeId, commentText, rating], (err) => {
+        if (err) {
+            console.error('Error saving comment:', err);
+            res.status(500).json({ message: 'Error saving comment' });
+            return;
+        }
+        res.json({ message: 'Comment saved successfully' });
+    });
+});
+
+app.get('/api/comments/:recipeId', async (req, res) => {
+    const { recipeId } = req.params;
+    const query = `
+        SELECT k.Kommentaar as text, COALESCE(u.Nimi, 'Anonymous') as username, k.Hinne as rating
+        FROM Kommentaarid k
+        LEFT JOIN Kasutaja u ON k.Kasutaja_ID = u.Kasutaja_ID
+        WHERE k.Retsept_ID = ?
+    `;
+    db.query(query, [recipeId], (err, results) => {
+        if (err) {
+            console.error('Error fetching comments:', err);
+            res.status(500).json({ message: 'Error fetching comments' });
+            return;
+        }
+        res.json(results);
+    });
+});
+
 app.post('/api/translate', express.json(), async (req, res) => {
     try {
         const { text, targetLang } = req.body;

@@ -71,33 +71,6 @@ async function displayRecipes(recipes) {
     }
 }
 
-async function handleSearch() {
-    const searchTerm = document.querySelector('.search-container input').value;
-    if (searchTerm.trim() !== '') {
-        try {
-            document.querySelector('.recipes-grid').innerHTML = '<div class="loading-message"><p>Otsin retsepte...</p></div>';
-
-            const response = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${searchTerm}`);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            
-            if (!data.meals) {
-                displayError('Otsingu tulemusi ei leitud. Proovi teisi märksõnu.');
-                return;
-            }
-
-            displayRecipes(data.meals);
-        } catch (error) {
-            console.error('Error searching recipes:', error);
-            displayError('Vabandust, otsingul tekkis viga. Palun proovi hiljem uuesti.');
-        }
-    }
-}
-
 function displayError(message) {
     const recipesGrid = document.querySelector('.recipes-grid');
     recipesGrid.innerHTML = `
@@ -139,7 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateNavBar();
 });
 
-document.querySelector('.search-container button').addEventListener('click', handleSearch);
 document.querySelector('.search-container input').addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         handleSearch();

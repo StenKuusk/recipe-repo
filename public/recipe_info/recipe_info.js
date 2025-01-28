@@ -67,31 +67,56 @@ async function displayRecipe(recipe) {
         }
 
         const userId = localStorage.getItem('userId');
-        if (userId) {
-            document.getElementById('add-comment-section').style.display = 'block';
-            document.getElementById('submit-comment').addEventListener('click', () => addComment(recipe.idMeal));
-            document.querySelectorAll('.star').forEach(star => {
-                star.addEventListener('click', () => {
-                    document.querySelectorAll('.star').forEach(s => s.classList.remove('selected'));
-                    star.classList.add('selected');
-                });
+        const addToFavoritesButton = document.createElement('button');
+        addToFavoritesButton.textContent = 'Lisa retsept lemmikutesse';
+        addToFavoritesButton.classList.add('add-to-favorites-button');
+        addToFavoritesButton.addEventListener('click', () => addToFavorites(recipe.idMeal));
+        instructionsList.appendChild(addToFavoritesButton);
+
+        document.getElementById('add-comment-section').style.display = 'block';
+        document.getElementById('submit-comment').addEventListener('click', () => addComment(recipe.idMeal));
+        document.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', () => {
+                document.querySelectorAll('.star').forEach(s => s.classList.remove('selected'));
+                star.classList.add('selected');
             });
-        }
+        });
     } catch (error) {
         console.error('Error displaying recipe:', error);
         displayError('Vabandust, retsepti kuvamisel tekkis viga. Palun proovi hiljem uuesti.');
     }
 }
 
-async function addComment(recipeId) {
+async function addToFavorites(recipeId) {
     const userId = localStorage.getItem('userId');
-    const commentText = document.getElementById('comment-text').value;
-    const rating = document.querySelector('.star.selected')?.getAttribute('data-value') || 0;
-
     if (!userId) {
-        alert('Palun logi sisse, et lisada kommentaare.');
+        alert('Palun logi sisse, et lisada retsepte lemmikutesse.');
         return;
     }
+
+    try {
+        const response = await fetch('/api/favorites', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, recipeId })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            alert('Retsept lisatud lemmikutesse.');
+        } else {
+            alert(`Viga: ${data.message}`);
+        }
+    } catch (error) {
+        console.error('Error adding recipe to favorites:', error);
+        alert('Vabandust, retsepti lisamisel lemmikutesse tekkis viga. Palun proovi hiljem uuesti.');
+    }
+}
+
+async function addComment(recipeId) {
+    const userId = localStorage.getItem('userId') || null;
+    const commentText = document.getElementById('comment-text').value;
+    const rating = document.querySelector('.star.selected')?.getAttribute('data-value') || 0;
 
     if (!commentText.trim()) {
         alert('Kommentaar ei tohi olla tühi.');
@@ -138,7 +163,7 @@ async function loadComments(recipeId) {
                 const commentElement = document.createElement('div');
                 commentElement.classList.add('comment');
                 commentElement.innerHTML = `
-                    <p><strong>${comment.username}</strong>: ${comment.text}</p>
+                    <p><strong>${comment.username || 'Anonymous'}</strong>: ${comment.text}</p>
                     <div class="rating">${renderStars(comment.rating)}</div>
                 `;
                 commentsSection.appendChild(commentElement);

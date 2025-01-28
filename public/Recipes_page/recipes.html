@@ -30,44 +30,55 @@
                     <label>Kategooria:</label>
                     <select id="category-filter">
                         <option value="">Kõik</option>
-                        <option value="hommikusöök">Hommikusöök</option>
-                        <option value="lõunasöök">Lõunasöök</option>
-                        <option value="õhtusöök">Õhtusöök</option>
-                        <option value="magustoit">Magustoit</option>
+                        <option value="Seafood">Seafood</option>
+                        <option value="Chicken">Chicken</option>
+                        <option value="Dessert">Dessert</option>
                     </select>
                 </div>
                 
                 <div class="filter-group">
-                    <label>Valmistamisaeg:</label>
-                    <select id="time-filter">
+                    <label>Põhikoostisosa:</label>
+                    <select id="ingredient-filter">
                         <option value="">Kõik</option>
-                        <option value="15">Kuni 15 min</option>
-                        <option value="30">Kuni 30 min</option>
-                        <option value="60">Kuni 1 tund</option>
-                        <option value="more">Üle 1 tunni</option>
+                        <option value="chicken_breast">Chicken Breast</option>
+                        <option value="salmon">Salmon</option>
+                        <option value="beef">Beef</option>
                     </select>
                 </div>
 
                 <div class="filter-group">
-                    <label>Raskusaste:</label>
-                    <select id="difficulty-filter">
+                    <label>Päritolu:</label>
+                    <select id="area-filter">
                         <option value="">Kõik</option>
-                        <option value="lihtne">Lihtne</option>
-                        <option value="keskmine">Keskmine</option>
-                        <option value="raske">Raske</option>
+                        <option value="Canadian">Canadian</option>
+                        <option value="Italian">Italian</option>
+                        <option value="Chinese">Chinese</option>
                     </select>
                 </div>
 
                 <button id="apply-filters-button">Rakenda filtrid</button>
                 <div class="page-search-container">
-                    <input type="text" placeholder="Otsi retsepti">
+                    <input type="text" id="search-input" placeholder="Otsi retsepti">
+                    <button id="search-button">🔍</button>
                 </div>
             </div>
         </div>
 
-        <section class="recipes-section">
+        <section class="recipes-section" id="recommended-section">
+            <h2>Maitsed laual soovitab</h2>
+            <div class="recipes-grid" id="recommended-recipes-grid">
+            </div>
+        </section>
+
+        <section class="recipes-section" id="popular-section">
             <h2>Populaarsed retseptid</h2>
             <div class="recipes-grid" id="random-recipes-grid">
+            </div>
+        </section>
+
+        <section class="recipes-section" id="search-results-section" style="display: none;">
+            <h2>Otsingutulemused</h2>
+            <div class="recipes-grid" id="search-results-grid">
             </div>
         </section>
     </div>
