@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const recipe = data.meals[0];
             await displayRecipe(recipe);
+            await loadComments(recipeId);
         } catch (error) {
             console.error('Error fetching recipe:', error);
             displayError('Vabandust, retsepti laadimisel tekkis viga. Palun proovi hiljem uuesti.');
@@ -66,13 +67,20 @@ async function displayRecipe(recipe) {
         }
 
         const userId = localStorage.getItem('userId');
-        if (userId) {
-            const addToFavoritesButton = document.createElement('button');
-            addToFavoritesButton.textContent = 'Lisa lemmikutesse';
-            addToFavoritesButton.classList.add('add-to-favorites-button');
-            addToFavoritesButton.addEventListener('click', () => addToFavorites(recipe.idMeal));
-            document.querySelector('.recipe-info-section').appendChild(addToFavoritesButton);
-        }
+        const addToFavoritesButton = document.createElement('button');
+        addToFavoritesButton.textContent = 'Lisa retsept lemmikutesse';
+        addToFavoritesButton.classList.add('add-to-favorites-button');
+        addToFavoritesButton.addEventListener('click', () => addToFavorites(recipe.idMeal));
+        instructionsList.appendChild(addToFavoritesButton);
+
+        document.getElementById('add-comment-section').style.display = 'block';
+        document.getElementById('submit-comment').addEventListener('click', () => addComment(recipe.idMeal));
+        document.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', () => {
+                document.querySelectorAll('.star').forEach(s => s.classList.remove('selected'));
+                star.classList.add('selected');
+            });
+        });
     } catch (error) {
         console.error('Error displaying recipe:', error);
         displayError('Vabandust, retsepti kuvamisel tekkis viga. Palun proovi hiljem uuesti.');
@@ -103,6 +111,76 @@ async function addToFavorites(recipeId) {
         console.error('Error adding recipe to favorites:', error);
         alert('Vabandust, retsepti lisamisel lemmikutesse tekkis viga. Palun proovi hiljem uuesti.');
     }
+}
+
+async function addComment(recipeId) {
+    const userId = localStorage.getItem('userId') || null;
+    const commentText = document.getElementById('comment-text').value;
+    const rating = document.querySelector('.star.selected')?.getAttribute('data-value') || 0;
+
+    if (!commentText.trim()) {
+        alert('Kommentaar ei tohi olla tühi.');
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/comments', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, recipeId, commentText, rating })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            alert('Kommentaar lisatud.');
+            document.getElementById('comment-text').value = '';
+            document.querySelectorAll('.star').forEach(star => star.classList.remove('selected'));
+            await loadComments(recipeId);
+        } else {
+            alert(`Viga: ${data.message}`);
+        }
+    } catch (error) {
+        console.error('Error adding comment:', error);
+        alert('Vabandust, kommentaari lisamisel tekkis viga. Palun proovi hiljem uuesti.');
+    }
+}
+
+async function loadComments(recipeId) {
+    try {
+        const response = await fetch(`/api/comments/${recipeId}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const comments = await response.json();
+        const commentsSection = document.getElementById('comments-section');
+        commentsSection.innerHTML = '';
+
+        if (comments.length === 0) {
+            commentsSection.innerHTML = '<p>Pole veel kommentaare</p>';
+        } else {
+            comments.forEach(comment => {
+                const commentElement = document.createElement('div');
+                commentElement.classList.add('comment');
+                commentElement.innerHTML = `
+                    <p><strong>${comment.username || 'Anonymous'}</strong>: ${comment.text}</p>
+                    <div class="rating">${renderStars(comment.rating)}</div>
+                `;
+                commentsSection.appendChild(commentElement);
+            });
+        }
+    } catch (error) {
+        console.error('Error loading comments:', error);
+        displayError('Vabandust, kommentaaride laadimisel tekkis viga. Palun proovi hiljem uuesti.');
+    }
+}
+
+function renderStars(rating) {
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 >= 0.5 ? 1 : 0;
+    const emptyStars = 5 - fullStars - halfStar;
+
+    return '★'.repeat(fullStars) + '☆'.repeat(emptyStars);
 }
 
 function displayError(message) {

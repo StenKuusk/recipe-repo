@@ -47,21 +47,6 @@ nav {
     color: black;
 }
 
-.search-container {
-    display: flex;
-    align-items: center;
-    background-color: #f5f5f5;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-}
-
-.search-container input {
-    border: none;
-    background: none;
-    outline: none;
-    padding: 0.2rem;
-    width: 200px;
-}
 
 .recipe-hero {
     height: 400px;
@@ -138,4 +123,76 @@ footer .logo {
     .recipe-hero h1 {
         font-size: 2rem;
     }
+}
+
+.add-to-favorites-button {
+    display: inline-block;
+    background-color: #FFD54F;
+    color: black;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 1rem;
+}
+
+.add-to-favorites-button:hover {
+    background-color: #FFC107;
+}
+
+
+#add-comment-section {
+    display: none;
+    margin-top: 2rem;
+}
+
+#add-comment-section textarea {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+}
+
+#add-comment-section .star {
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #FFD54F;
+}
+
+#add-comment-section .star.selected {
+    color: #FFC107;
+}
+
+#add-comment-section button {
+    display: inline-block;
+    background-color: #FFD54F;
+    color: black;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 1rem;
+}
+
+#add-comment-section button:hover {
+    background-color: #FFC107;
+}
+
+.comment {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.comment p {
+    margin-bottom: 0.5rem;
+}
+
+.comment .rating {
+    color: #FFD54F;
 }
