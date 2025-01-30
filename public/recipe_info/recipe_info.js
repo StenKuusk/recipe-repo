@@ -17,6 +17,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             const recipe = data.meals[0];
             await displayRecipe(recipe);
             await loadComments(recipeId);
+
+            await fetch('/api/recipes/view', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ recipeId })
+            });
         } catch (error) {
             console.error('Error fetching recipe:', error);
             displayError('Vabandust, retsepti laadimisel tekkis viga. Palun proovi hiljem uuesti.');
@@ -77,8 +83,13 @@ async function displayRecipe(recipe) {
         document.getElementById('submit-comment').addEventListener('click', () => addComment(recipe.idMeal));
         document.querySelectorAll('.star').forEach(star => {
             star.addEventListener('click', () => {
-                document.querySelectorAll('.star').forEach(s => s.classList.remove('selected'));
-                star.classList.add('selected');
+                const ratingValue = star.getAttribute('data-value');
+                document.querySelectorAll('.star').forEach(s => {
+                    s.classList.remove('selected');
+                    if (s.getAttribute('data-value') <= ratingValue) {
+                        s.classList.add('selected');
+                    }
+                });
             });
         });
     } catch (error) {
@@ -162,10 +173,9 @@ async function loadComments(recipeId) {
             comments.forEach(comment => {
                 const commentElement = document.createElement('div');
                 commentElement.classList.add('comment');
-                commentElement.innerHTML = `
-                    <p><strong>${comment.username || 'Anonymous'}</strong>: ${comment.text}</p>
-                    <div class="rating">${renderStars(comment.rating)}</div>
-                `;
+                commentElement.innerHTML = 
+                    `<p><strong>${comment.username || 'Anonymous'}</strong>: ${comment.text}</p>
+                    <div class="rating">${renderStars(comment.rating)}</div>`;
                 commentsSection.appendChild(commentElement);
             });
         }
@@ -185,11 +195,10 @@ function renderStars(rating) {
 
 function displayError(message) {
     const recipeInfoSection = document.querySelector('.recipe-info-section');
-    recipeInfoSection.innerHTML = `
-        <div class="error-message">
+    recipeInfoSection.innerHTML = 
+        `<div class="error-message">
             <p>${message}</p>
-        </div>
-    `;
+        </div>`;
 }
 
 function updateNavBar() {
@@ -198,23 +207,21 @@ function updateNavBar() {
 
     if (navButtons) {
         if (userId) {
-            navButtons.innerHTML = `
-                <a href="/" class="nav-button">Kodu</a>
+            navButtons.innerHTML = 
+                `<a href="/" class="nav-button">Kodu</a>
                 <a href="/recipes.html" class="nav-button">Retseptid</a>
                 <a href="../Account_favorites/favorites.html" class="nav-button">Minu Retseptid</a>
-                <a href="#" class="nav-button" id="logout-button">Logi välja</a>
-            `;
+                <a href="#" class="nav-button" id="logout-button">Logi välja</a>`;
 
             document.getElementById('logout-button').addEventListener('click', () => {
                 localStorage.removeItem('userId');
                 window.location.href = '/';
             });
         } else {
-            navButtons.innerHTML = `
-                <a href="/" class="nav-button">Kodu</a>
+            navButtons.innerHTML = 
+                `<a href="/" class="nav-button">Kodu</a>
                 <a href="/recipes.html" class="nav-button">Retseptid</a>
-                <a href="/login.html" class="nav-button">Logi Sisse</a>
-            `;
+                <a href="/login.html" class="nav-button">Logi Sisse</a>`;
         }
     }
 }

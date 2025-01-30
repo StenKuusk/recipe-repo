@@ -197,6 +197,43 @@ app.get('/api/comments/:recipeId', async (req, res) => {
     });
 });
 
+app.post('/api/recipes/view', async (req, res) => {
+    const { recipeId } = req.body;
+    const query = 'UPDATE Retseptid SET Vaatamised = Vaatamised + 1 WHERE Retsept_ID = ?';
+    db.query(query, [recipeId], (err) => {
+        if (err) {
+            console.error('Error updating recipe views:', err);
+            res.status(500).json({ message: 'Error updating recipe views' });
+            return;
+        }
+        res.json({ message: 'Recipe view updated successfully' });
+    });
+});
+
+app.get('/api/recipes/popular', async (req, res) => {
+    const query = 'SELECT * FROM Retseptid ORDER BY Vaatamised DESC LIMIT 3';
+    db.query(query, async (err, results) => {
+        if (err) {
+            console.error('Error fetching popular recipes:', err);
+            res.status(500).json({ message: 'Error fetching popular recipes' });
+            return;
+        }
+
+        const recipesWithImages = await Promise.all(results.map(async (recipe) => {
+            const imageResponse = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${recipe.Retsept_ID}`);
+            const imageData = await imageResponse.json();
+            if (imageData.meals && imageData.meals.length > 0) {
+                recipe.strMealThumb = imageData.meals[0].strMealThumb;
+            } else {
+                recipe.strMealThumb = 'https://via.placeholder.com/400x300?text=Pilt+pole+saadaval';
+            }
+            return recipe;
+        }));
+
+        res.json(recipesWithImages);
+    });
+});
+
 app.post('/api/translate', express.json(), async (req, res) => {
     try {
         const { text, targetLang } = req.body;
