@@ -49,6 +49,8 @@ nav {
     color: black;
 }
 
+
+
 .page-search-container {
     display: flex;
     justify-content: center;
@@ -207,4 +209,79 @@ footer .logo {
     .recipes-grid {
         grid-template-columns: 1fr;
     }
+}
+
+.filters-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.filters-container h3 {
+    margin-top: 0;
+}
+
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.filter-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.filter-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.filter-group select,
+.page-search-container input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+button#search-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button#apply-filters-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 6px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button#apply-filters-button:hover,
+button#search-button:hover {
+    background-color: #0056b3;
+}
+
+.page-search-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.page-search-container input {
+    flex: 1;
 }

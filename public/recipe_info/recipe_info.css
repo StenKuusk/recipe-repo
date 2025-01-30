@@ -156,13 +156,26 @@ footer .logo {
 }
 
 #add-comment-section .star {
-    font-size: 1.5rem;
+    font-size: 2rem; 
     cursor: pointer;
-    color: #FFD54F;
+    color: #979797;
+    position: relative; 
+}
+
+#add-comment-section .star::before {
+    content: '★'; 
+    color: #FFD54F; 
+    position: absolute; 
+    opacity: 0; 
+    transition: opacity 0.3s; 
+}
+
+#add-comment-section .star.selected::before {
+    opacity: 1; 
 }
 
 #add-comment-section .star.selected {
-    color: #FFC107;
+    color: transparent; 
 }
 
 #add-comment-section button {
@@ -174,7 +187,6 @@ footer .logo {
     border-radius: 20px;
     cursor: pointer;
     transition: background-color 0.3s;
-    margin-top: 1rem;
 }
 
 #add-comment-section button:hover {

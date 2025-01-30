@@ -1,31 +1,3 @@
-async function fetchRandomRecipes() {
-    try {
-        const loadingHTML = `
-            <div class="loading-message">
-                <p>Laen retsepte...</p>
-            </div>
-        `;
-        document.getElementById('random-recipes-grid').innerHTML = loadingHTML;
-
-        const recipes = [];
-        for (let i = 0; i < 3; i++) {
-            const response = await fetch('https://www.themealdb.com/api/json/v1/1/random.php');
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-            if (data.meals) {
-                recipes.push(data.meals[0]);
-            }
-        }
-
-        await displayRecipes(recipes, 'random-recipes-grid');
-    } catch (error) {
-        console.error('Error fetching recipes:', error);
-        displayError('Vabandust, retseptide laadimisel tekkis viga. Palun proovi hiljem uuesti.');
-    }
-}
-
 async function fetchRecipeById(id) {
     const url = `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`;
     const response = await fetch(url);
@@ -82,7 +54,6 @@ async function applySearchAndFilters() {
         recipes = await fetchRecipesBySearch(translatedQuery);
         if (recipes.length > 0) {
             document.getElementById('recommended-section').style.display = 'none';
-            document.getElementById('popular-section').style.display = 'none';
             document.getElementById('search-results-section').style.display = 'block';
             await displayRecipes(recipes, 'search-results-grid');
         } else {
@@ -90,7 +61,6 @@ async function applySearchAndFilters() {
         }
     } else {
         document.getElementById('recommended-section').style.display = 'block';
-        document.getElementById('popular-section').style.display = 'block';
         document.getElementById('search-results-section').style.display = 'none';
 
         if (category) {
@@ -100,8 +70,8 @@ async function applySearchAndFilters() {
         } else if (area) {
             recipes = await fetchRecipesByFilter('a', area);
         }
-
-        await displayRecipes(recipes, 'random-recipes-grid');
+        console.log('Filtered recipes:', recipes);
+        await displayRecipes(recipes, 'recommended-recipes-grid');
     }
 }
 
@@ -145,7 +115,6 @@ async function displayRecipes(recipes, containerId) {
 }
 
 async function initializePage() {
-    await fetchRandomRecipes();
     await fetchRecommendedRecipes();
 
     document.getElementById('search-button').addEventListener('click', applySearchAndFilters);
